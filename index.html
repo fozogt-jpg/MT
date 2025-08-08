@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<title>The Movie Theater Kiosk</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@700&display=swap');
+  
+  html, body {
+    margin: 0; padding: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #0a0a0a; /* super dark */
+    font-family: 'Roboto Slab', serif;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: linear-gradient(90deg, #b22222 0%, #800000 100%);
+    padding: 25px 0;
+    text-align: center;
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    user-select: none;
+    box-shadow: 0 5px 20px rgba(178, 34, 34, 0.7);
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+  main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 20px;
+  }
+  section.step {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 480px;
+    padding: 0 15px;
+  }
+  section.step.active {
+    display: flex;
+    animation: fadeIn 0.5s ease forwards;
+  }
+  @keyframes fadeIn {
+    from {opacity: 0; transform: translateY(10px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+
+  h1 {
+    font-size: 3.4rem;
+    font-weight: 700;
+    margin-bottom: 40px;
+    text-align: center;
+    text-shadow: 0 0 8px #b22222;
+  }
+
+  .button-grid {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  button.select-btn, button.nav-btn {
+    background-color: #b22222;
+    border: none;
+    border-radius: 30px;
+    color: white;
+    font-size: 3.2rem;
+    font-weight: 700;
+    padding: 30px 70px;
+    cursor: pointer;
+    user-select: none;
+    min-width: 170px;
+    text-align: center;
+    box-shadow: 0 6px 15px rgba(178, 34, 34, 0.75);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  button.select-btn:hover,
+  button.select-btn:focus,
+  button.nav-btn:hover,
+  button.nav-btn:focus {
+    background-color: #ff4c4c;
+    outline: none;
+    box-shadow: 0 8px 25px #ff2a2a;
+  }
+  button.select-btn:active,
+  button.nav-btn:active {
+    background-color: #cc0000;
+    box-shadow: 0 4px 12px #a30000;
+  }
+  button.select-btn[disabled],
+  button.nav-btn[disabled] {
+    background-color: #660000;
+    cursor: not-allowed;
+    box-shadow: none;
+    color: #aaa;
+  }
+
+  .movie-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #b22222;
+    border: none;
+    border-radius: 30px;
+    padding: 25px 20px 35px;
+    cursor: pointer;
+    user-select: none;
+    max-width: 320px;
+    box-shadow: 0 6px 18px rgba(178, 34, 34, 0.8);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .movie-button:hover,
+  .movie-button:focus {
+    background-color: #ff4c4c;
+    outline: none;
+    box-shadow: 0 8px 25px #ff2a2a;
+  }
+  .movie-button:active {
+    background-color: #cc0000;
+    box-shadow: 0 4px 12px #a30000;
+  }
+  .movie-button[aria-pressed="true"] {
+    background-color: #ff1a1a;
+    box-shadow: 0 0 35px #ff0000;
+  }
+  .movie-button img {
+    max-width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 0 25px #660000;
+    user-select: none;
+    pointer-events: none;
+  }
+  .movie-name {
+    margin-top: 20px;
+    font-size: 2.8rem;
+    font-weight: 900;
+    letter-spacing: 1.3px;
+    user-select: none;
+    text-shadow: 0 0 10px #aa2222;
+  }
+
+  .nav-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    margin-top: 50px;
+    flex-wrap: wrap;
+  }
+
+  .thank-you {
+    font-size: 2.8rem;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.5;
+    max-width: 420px;
+    user-select: none;
+    text-shadow: 0 0 10px #b22222;
+  }
+
+  @media (max-width: 520px) {
+    h1 {
+      font-size: 2.6rem;
+      margin-bottom: 25px;
+    }
+    button.select-btn, button.nav-btn {
+      font-size: 2.2rem;
+      padding: 22px 45px;
+      min-width: 130px;
+    }
+    .movie-name {
+      font-size: 2rem;
+      margin-top: 15px;
+    }
+    .thank-you {
+      font-size: 2rem;
+      max-width: 90vw;
+    }
+    main {
+      padding: 20px 10px;
+    }
+    .nav-buttons {
+      gap: 30px;
+      margin-top: 30px;
+    }
+  }
+</style>
+</head>
+<body>
+  <header role="banner">The Movie Theater</header>
+  <main>
+    <!-- Step 1 -->
+    <section id="step1" class="step active" aria-label="Select number of people">
+      <h1>Select the number of people joining us today:</h1>
+      <div class="button-grid">
+        <button class="select-btn" id="people6">6</button>
+      </div>
+      <div class="nav-buttons">
+        <button class="nav-btn" id="next1" disabled>Next</button>
+      </div>
+    </section>
+
+    <!-- Step 2 -->
+    <section id="step2" class="step" aria-label="Choose a movie">
+      <h1>Choose a Movie</h1>
+      <button class="movie-button" id="movieTurningRed" aria-pressed="false" tabindex="0">
+        <img src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQYGcDQZPX0Ghja5A8R0Vk9OT-ewrl6pbh0OPRXl0v38q74pnH9" alt="Turning Red movie poster" />
+        <div class="movie-name">Turning Red</div>
+      </button>
+      <div class="nav-buttons">
+        <button class="nav-btn" id="back2">Back</button>
+        <button class="nav-btn" id="next2" disabled>Next</button>
+      </div>
+    </section>
+
+    <!-- Step 3 -->
+    <section id="step3" class="step" aria-label="Thank you message">
+      <div class="thank-you" tabindex="0">
+        Thank you for registering!<br />
+        Drinks and snacks will be provided.<br />
+        You are on the first floor.
+      </div>
+      <div class="nav-buttons" style="margin-top:60px;">
+        <button class="nav-btn" id="back3">Back</button>
+      </div>
+    </section>
+  </main>
+
+<script>
+  const steps = ['step1', 'step2', 'step3'];
+  let currentStepIndex = 0;
+
+  const people6Btn = document.getElementById('people6');
+  const next1Btn = document.getElementById('next1');
+
+  const movieBtn = document.getElementById('movieTurningRed');
+  const back2Btn = document.getElementById('back2');
+  const next2Btn = document.getElementById('next2');
+
+  const back3Btn = document.getElementById('back3');
+
+  let selectedPeople = null;
+  let selectedMovie = null;
+
+  function showStep(index) {
+    steps.forEach((stepId, i) => {
+      const step = document.getElementById(stepId);
+      if(i === index){
+        step.classList.add('active');
+      } else {
+        step.classList.remove('active');
+      }
+    });
+    currentStepIndex = index;
+  }
+
+  // Step 1: Select people
+  people6Btn.addEventListener('click', () => {
+    // Reset highlight in case of multiple buttons (only one here)
+    people6Btn.style.backgroundColor = '#ff4c4c';
+    selectedPeople = '6';
+    next1Btn.disabled = false;
+    people6Btn.focus();
+  });
+
+  next1Btn.addEventListener('click', () => {
+    if (selectedPeople === '6') {
+      showStep(1);
+      selectedMovie = null;
+      movieBtn.setAttribute('aria-pressed', 'false');
+      movieBtn.style.backgroundColor = '#b22222';
+      next2Btn.disabled = true;
+      movieBtn.focus();
+    }
+  });
+
+  // Step 2: Select movie
+  movieBtn.addEventListener('click', () => {
+    if (selectedMovie === 'Turning Red') {
+      selectedMovie = null;
+      movieBtn.style.backgroundColor = '#b22222';
+      movieBtn.setAttribute('aria-pressed', 'false');
+      next2Btn.disabled = true;
+    } else {
+      selectedMovie = 'Turning Red';
+      movieBtn.style.backgroundColor = '#ff4c4c';
+      movieBtn.setAttribute('aria-pressed', 'true');
+      next2Btn.disabled = false;
+    }
+    movieBtn.focus();
+  });
+
+  back2Btn.addEventListener('click', () => {
+    showStep(0);
+    next1Btn.disabled = !selectedPeople;
+    people6Btn.focus();
+  });
+
+  next2Btn.addEventListener('click', () => {
+    if (selectedMovie === 'Turning Red') {
+      showStep(2);
+      back3Btn.focus();
+    }
+  });
+
+  back3Btn.addEventListener('click', () => {
+    showStep(1);
+    movieBtn.focus();
+  });
+
+  // Initialize on load
+  window.onload = () => {
+    next1Btn.disabled = true;
+    next2Btn.disabled = true;
+    people6Btn.style.backgroundColor = '#b22222';
+    movieBtn.style.backgroundColor = '#b22222';
+    showStep(0);
+    people6Btn.focus();
+  };
+</script>
+</body>
+</html>
