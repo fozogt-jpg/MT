@@ -169,6 +169,66 @@
 </style>
 </head>
 <body>
+    <!-- Add this inside <body>, right after <header> -->
+<button id="fullscreenBtn" title="Toggle fullscreen">
+  ⛶
+</button>
+
+<style>
+  /* Fullscreen button style */
+  #fullscreenBtn {
+    position: fixed;
+    top: 14px;
+    right: 14px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    font-size: 20px;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    z-index: 999;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+  #fullscreenBtn:hover {
+    background: rgba(0,0,0,0.75);
+    transform: scale(1.05);
+  }
+  #fullscreenBtn:active {
+    transform: scale(0.95);
+  }
+</style>
+
+<script>
+  // Fullscreen toggle logic
+  const fsBtn = document.getElementById('fullscreenBtn');
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        alert(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  }
+
+  fsBtn.addEventListener('click', toggleFullscreen);
+
+  // Optional: change icon depending on state
+  document.addEventListener('fullscreenchange', () => {
+    if (document.fullscreenElement) {
+      fsBtn.textContent = '🡼'; // Exit icon
+      fsBtn.title = "Exit fullscreen";
+    } else {
+      fsBtn.textContent = '⛶'; // Enter icon
+      fsBtn.title = "Enter fullscreen";
+    }
+  });
+</script>
+
   <header>The Movie Theater</header>
 
   <main>
